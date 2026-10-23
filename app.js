@@ -289,9 +289,7 @@ document
 .getElementById("updateBtn")
 .addEventListener("click",()=>{
 
-    renderRace(
-     (
-    );
+    renderRace(tableData());
 
 });
 
