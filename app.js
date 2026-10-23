@@ -290,7 +290,7 @@ document
 .addEventListener("click",()=>{
 
     renderRace(
-     ()
+     (
     );
 
 });
