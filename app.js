@@ -102,10 +102,61 @@ function tableData() {
   });
 }
 
+/** Espaciado responsive: más juntos en desktop y móvil */
+function getRaceLayout() {
+  const isMobile = window.innerWidth <= 768;
+  return {
+    topStart: isMobile ? 52 : 62,
+    rowGap: isMobile ? 76 : 86,
+    leftPadding: 8,
+    rightPadding: 170 // reserva espacio para la imagen al final
+  };
+}
+
+/** Tooltip cerca del elemento y siempre dentro de pantalla */
+function placeTooltip(pageX, pageY) {
+  const margin = 8;
+  const offset = 10;
+
+  tooltip.style.display = "block";
+  tooltip.style.visibility = "hidden"; // medir sin parpadeo
+
+  const tw = tooltip.offsetWidth || 180;
+  const th = tooltip.offsetHeight || 90;
+
+  let x = pageX + offset;
+  let y = pageY + offset;
+
+  const maxX = window.scrollX + window.innerWidth - tw - margin;
+  const maxY = window.scrollY + window.innerHeight - th - margin;
+
+  if (x > maxX) x = pageX - tw - offset;
+  if (y > maxY) y = pageY - th - offset;
+
+  if (x < window.scrollX + margin) x = window.scrollX + margin;
+  if (y < window.scrollY + margin) y = window.scrollY + margin;
+
+  tooltip.style.left = `${x}px`;
+  tooltip.style.top = `${y}px`;
+  tooltip.style.visibility = "visible";
+}
+
+function setTooltipContent(p) {
+  tooltip.innerHTML = `
+    <strong>${p.proyecto}</strong>
+    <hr style="margin:8px 0">
+    <b>Cliente:</b> ${p.cliente}<br>
+    <b>Venta:</b> $${money(p.venta)}<br>
+    <b>Probabilidad:</b> ${p.probabilidad}%<br>
+    <b>Cierre:</b> ${p.cierre}
+  `;
+}
+
 function renderRace(data) {
   racersEl.innerHTML = "";
 
   const sorted = [...data].sort((a, b) => b.probabilidad - a.probabilidad);
+  const { topStart, rowGap, leftPadding, rightPadding } = getRaceLayout();
 
   sorted.forEach((p, index) => {
     const racer = document.createElement("div");
@@ -121,32 +172,48 @@ function renderRace(data) {
       <img src="${image}">
     `;
 
-    racer.style.top = 80 + index * 110 + "px";
-    racer.style.left = "0px";
+    racer.style.top = `${topStart + index * rowGap}px`;
+    racer.style.left = `${leftPadding}px`;
 
     racersEl.appendChild(racer);
 
     setTimeout(() => {
       const width = racersEl.offsetWidth;
-      racer.style.left = ((width - 260) * p.probabilidad) / 100 + "px";
+      const usable = Math.max(40, width - rightPadding - leftPadding);
+      racer.style.left = `${leftPadding + (usable * p.probabilidad) / 100}px`;
     }, 50);
 
+    // Desktop: mouse
     racer.addEventListener("mousemove", (e) => {
-      tooltip.style.display = "block";
-      tooltip.style.left = e.pageX + 15 + "px";
-      tooltip.style.top = e.pageY + 15 + "px";
-
-      tooltip.innerHTML = `
-        <strong>${p.proyecto}</strong>
-        <hr style="margin:10px 0">
-        <b>Cliente:</b> ${p.cliente}<br>
-        <b>Venta:</b> $${money(p.venta)}<br>
-        <b>Probabilidad:</b> ${p.probabilidad}%<br>
-        <b>Cierre:</b> ${p.cierre}
-      `;
+      setTooltipContent(p);
+      placeTooltip(e.pageX, e.pageY);
     });
 
     racer.addEventListener("mouseleave", () => {
+      tooltip.style.display = "none";
+    });
+
+    // Móvil: touch
+    racer.addEventListener(
+      "touchstart",
+      (e) => {
+        const t = e.touches[0];
+        setTooltipContent(p);
+        placeTooltip(t.pageX, t.pageY);
+      },
+      { passive: true }
+    );
+
+    racer.addEventListener(
+      "touchmove",
+      (e) => {
+        const t = e.touches[0];
+        placeTooltip(t.pageX, t.pageY);
+      },
+      { passive: true }
+    );
+
+    racer.addEventListener("touchend", () => {
       tooltip.style.display = "none";
     });
   });
@@ -167,6 +234,10 @@ document.getElementById("addRowBtn").addEventListener("click", () => {
 });
 
 document.getElementById("updateBtn").addEventListener("click", () => {
+  renderRace(tableData());
+});
+
+window.addEventListener("resize", () => {
   renderRace(tableData());
 });
 
