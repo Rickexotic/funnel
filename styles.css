@@ -129,7 +129,7 @@ h1{
 
 #tooltip{
 
-    position:fixed;
+    position:absolute;
 
     display:none;
 
@@ -145,6 +145,7 @@ h1{
 
     box-shadow:
         0 20px 40px rgba(0,0,0,.18);
+    max-width: min(260px, 85vw);
 
     pointer-events:none;
 }
