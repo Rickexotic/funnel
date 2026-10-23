@@ -1,47 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Sales Race Pipeline</title>
+    <title>Sales Race Pipeline</title>
 
-<link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-<div class="header">
+    <div class="container">
 
-    <h1>🏇 Pipeline Comercial</h1>
+        <header>
 
-    <div id="kpis"></div>
+            <h1>🏇 Pipeline Comercial</h1>
 
-</div>
+            <div id="kpis" class="kpis"></div>
 
-<div id="raceContainer">
+        </header>
 
-    <div class="finishLine">
-        🏁 META
+        <section id="raceContainer">
+
+            <img
+                src="assets/pista.png"
+                class="track"
+                alt="Pista">
+
+            <div class="finish">
+                🏁 META
+            </div>
+
+            <div id="racers"></div>
+
+        </section>
+
+        <section class="editor">
+
+            <h2>Editor de Oportunidades</h2>
+
+            <table id="pipelineTable">
+
+                <thead>
+                    <tr>
+                        <th>Proyecto</th>
+                        <th>Cliente</th>
+                        <th>Venta</th>
+                        <th>Prob.</th>
+                        <th>Cierre</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tableBody"></tbody>
+
+            </table>
+
+            <div class="actions">
+
+                <button id="addRowBtn">
+                    + Agregar Proyecto
+                </button>
+
+                <button id="updateBtn">
+                    Actualizar Carrera
+                </button>
+
+            </div>
+
+        </section>
+
     </div>
 
-    <img src="assets/pista.png" class="track">
+    <div id="tooltip"></div>
 
-    <div id="racers"></div>
-
-</div>
-
-<div class="editor">
-
-    <h2>Editor de oportunidades</h2>
-
-    <textarea id="dataInput"></textarea>
-
-    <button id="updateBtn">
-        Actualizar Carrera
-    <"tooltip"></div>
-
-<script src="app.js"></script>
+    <script src="app.js"></script>
 
 </body>
+
 </html>
