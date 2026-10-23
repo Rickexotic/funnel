@@ -36,13 +36,8 @@ const projects = [
 
 const racersEl = document.getElementById("racers");
 const tooltip = document.getElementById("tooltip");
-const dataInput = document.getElementById("dataInput");
 
-dataInput.value = projects.map(p =>
-`${p.proyecto};${p.cliente};${p.venta};${p.probabilidad};${p.cierre}`
-).join("\n");
-
-function formatMoney(v){
+function money(v){
 
     return new Intl.NumberFormat(
         "es-CL"
@@ -57,7 +52,8 @@ function renderKPIs(data){
 
     const weighted =
         data.reduce(
-            (a,b)=>a + (b.venta * b.probabilidad/100),
+            (a,b)=>
+            a + (b.venta*b.probabilidad/100),
             0
         );
 
@@ -69,7 +65,7 @@ function renderKPIs(data){
 
     <div class="kpi">
         <div class="kpi-value">
-            $${formatMoney(total)}
+            $${money(total)}
         </div>
         <div class="kpi-label">
             Pipeline
@@ -81,16 +77,16 @@ function renderKPIs(data){
             ${avg.toFixed(0)}%
         </div>
         <div class="kpi-label">
-            Probabilidad
+            Probabilidad Promedio
         </div>
     </div>
 
     <div class="kpi">
         <div class="kpi-value">
-            $${formatMoney(weighted)}
+            $${money(weighted)}
         </div>
         <div class="kpi-label">
-            Weighted
+            Pipeline Ponderado
         </div>
     </div>
 
@@ -99,11 +95,67 @@ function renderKPIs(data){
             ${data.length}
         </div>
         <div class="kpi-label">
-            Proyectos
+            Oportunidades
         </div>
     </div>
 
     `;
+}
+
+function renderTable(data){
+
+    const body =
+        document.getElementById("tableBody");
+
+    body.innerHTML = "";
+
+    data.forEach(p=>{
+
+        body.innerHTML += `
+
+        <tr>
+
+            <td><input value="${p.proyecto}"></td>
+
+            <td><input value="${p.cliente}"></td>
+
+            <td><input value="${p.venta}"></td>
+
+            <td><input value="${p.probabilidad}"></td>
+
+            <td><input value="${p.cierre}"></td>
+
+        </tr>
+
+        `;
+    });
+}
+
+function tableData(){
+
+    const rows =
+
+        document.querySelectorAll(
+            "#tableBody tr"
+        );
+
+    return [...rows].map(r=>{
+
+        const c =
+            r.querySelectorAll("input");
+
+        return{
+
+            proyecto:c[0].value,
+            cliente:c[1].value,
+            venta:Number(c[2].value),
+            probabilidad:Number(c[3].value),
+            cierre:c[4].value
+
+        };
+
+    });
+
 }
 
 function renderRace(data){
@@ -124,29 +176,28 @@ function renderRace(data){
 
         racer.className = "racer";
 
-        const isLast =
+        const isDonkey =
             index === sorted.length-1;
 
-        const animal =
-            isLast
+        const image =
+            isDonkey
             ? "assets/burro.png"
             : `assets/caballo${Math.min(index+1,3)}.png`;
 
         racer.innerHTML = `
 
-            <div class="bubble">
-                ${p.proyecto}
-            </div>
+        <div class="bubble">
 
-            ${animal}
+            ${p.proyecto}
+
+        </div>
+
+        <img src="${image}">
 
         `;
 
-        const y =
-            80 + (index*90);
-
         racer.style.top =
-            y + "px";
+            (80 + index*110) + "px";
 
         racer.style.left = "0px";
 
@@ -155,13 +206,14 @@ function renderRace(data){
         setTimeout(()=>{
 
             const width =
-                racersEl.clientWidth;
+                racersEl.offsetWidth;
 
             racer.style.left =
-                ((width-220) *
-                p.probabilidad /100) + "px";
+                ((width-260)
+                * p.probabilidad/100)
+                +"px";
 
-        },100);
+        },50);
 
         racer.addEventListener(
             "mousemove",
@@ -171,30 +223,30 @@ function renderRace(data){
                     "block";
 
                 tooltip.style.left =
-                    e.pageX + 15 + "px";
+                    e.pageX+15+"px";
 
                 tooltip.style.top =
-                    e.pageY + 15 + "px";
+                    e.pageY+15+"px";
 
                 tooltip.innerHTML = `
 
-                    <strong>${p.proyecto}</strong>
-                    <hr>
+                <strong>${p.proyecto}</strong>
 
-                    Cliente:
-                    ${p.cliente}<br>
+                <hr style="margin:10px 0">
 
-                    Venta:
-                    $${formatMoney(p.venta)}<br>
+                <b>Cliente:</b>
+                ${p.cliente}<br>
 
-                    Probabilidad:
-                    ${p.probabilidad}%<br>
+                <b>Venta:</b>
+                $${money(p.venta)}<br>
 
-                    Cierre:
-                    ${p.cierre}
+                <b>Probabilidad:</b>
+                ${p.probabilidad}%<br>
+
+                <b>Cierre:</b>
+                ${p.cierre}
 
                 `;
-
             }
         );
 
@@ -207,44 +259,41 @@ function renderRace(data){
 
             }
         );
-
     });
 
     renderKPIs(sorted);
 }
 
-renderRace(projects);
+document
+.getElementById("addRowBtn")
+.addEventListener("click",()=>{
+
+    document
+    .getElementById("tableBody")
+    .innerHTML += `
+
+    <tr>
+
+        <td><input></td>
+        <td><input></td>
+        <td><input></td>
+        <td><input></td>
+        <td><input></td>
+
+    </tr>
+
+    `;
+});
 
 document
 .getElementById("updateBtn")
-.addEventListener(
-    "click",
-    ()=>{
+.addEventListener("click",()=>{
 
-        const rows =
-            dataInput.value
-            .trim()
-            .split("\n");
+    renderRace(
+     ()
+    );
 
-        const data =
-            rows.map(r=>{
+});
 
-                const c =
-                    r.split(";");
-
-                return {
-
-                    proyecto:c[0],
-                    cliente:c[1],
-                    venta:Number(c[2]),
-                    probabilidad:Number(c[3]),
-                    cierre:c[4]
-
-                };
-
-            });
-
-        renderRace(data);
-
-    }
-);
+renderTable(projects);
+renderRace(projects);
