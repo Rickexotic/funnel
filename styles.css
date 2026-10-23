@@ -212,4 +212,77 @@ button{
         grid-template-columns:1fr 1fr;
 
     }
+
+    #pipelineTable{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+    border-radius:16px;
+
+    overflow:hidden;
+
+    box-shadow:0 6px 20px rgba(0,0,0,.08);
+
+}
+
+#pipelineTable th{
+
+    background:#FF005C;
+
+    color:white;
+
+    padding:14px;
+
+    text-align:left;
+
+}
+
+#pipelineTable td{
+
+    padding:10px;
+
+    border-bottom:1px solid #eee;
+
+}
+
+#pipelineTable input{
+
+    width:100%;
+
+    border:none;
+
+    outline:none;
+
+    font-size:14px;
+
+    padding:6px;
+
+}
+
+.editor-actions{
+
+    margin-top:16px;
+
+    display:flex;
+
+    gap:12px;
+
+}
+
+@media(max-width:768px){
+
+    #pipelineTable{
+
+        display:block;
+
+        overflow-x:auto;
+
+    }
+
+}
+
 }
